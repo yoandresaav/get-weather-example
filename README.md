@@ -1,7 +1,7 @@
 
 ## Introduction
 
-Clone this repo. You will need set a weather map api key in order to run correctly this repo.
+Clone this repo. You will need set a open weather map api key in order to run correctly this repo. This api manage if the open weather api key has reached limit.
 
 ### Create python virtual environment. Tested in python 3.11 [In this case .venv is the name I prefer but could be other]
 ```cmd
