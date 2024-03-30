@@ -64,6 +64,9 @@ def get_temperature(request):
             if city["lat"] and city["long"]
     ]
 
+    # In this case I will use thread to make many request at the same time
+    # Other solution could be using async, but need use a different library to run Django with async
+    # like Daphne or Uvicorn
     MAX_THREADS = min(os.cpu_count(), len(clean_city))
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
         try:
