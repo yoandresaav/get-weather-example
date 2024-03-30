@@ -9,6 +9,9 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
+### Create .env file
+Copy .env.test to .env and provide real values
+
 ### Install packages
 ```cmd
 pip install -r requirements.txt
