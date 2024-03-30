@@ -42,4 +42,4 @@ pytest .
 
 
 ### Image
-![image](relative%20images/screencapture.png?raw=true "Image")
+![image](images/screencapture.png)
