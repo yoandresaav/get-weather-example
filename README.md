@@ -1,4 +1,8 @@
 
+## Introduction
+
+Clone this repo. You will need set a weather map api key in order to run correctly this repo.
+
 ### Create python virtual environment. Tested in python 3.11 [In this case .venv is the name I prefer but could be other]
 ```cmd
 python -m venv .venv
@@ -35,3 +39,7 @@ Open localhost:8000/?city=mex or click in this [link](http://localhost:8000/?cit
 ```cmd
 pytest .
 ```
+
+
+### Image
+![image](images/screencapture.png)
