@@ -11,13 +11,26 @@ from django.conf import settings
 
 
 OPEN_WEATHERMAP_KEY = settings.OPEN_WEATHERMAP_KEY
+BASE_URL_OPEN_WEATHER = "https://api.openweathermap.org/data/2.5/onecall"
+URL_PART = "&exclude=current,minutely,hourly,alerts&units=metric"
+
+
+class OpenWeatherException(Exception):
+    value = "Error getting the temperature"
+
+class OpenWeatherLimitException(Exception):
+    value = "Error getting the temperature, limit reached"
+
 
 def get_temperature_from_city(city):
     """Get the current temperature from a place"""
-    URL_OPEN_WEATHER_MAP = f'https://api.openweathermap.org/data/2.5/onecall?lat={city["lat"]}&lon={city["lon"]}&exclude=current,minutely,hourly,alerts&appid={OPEN_WEATHERMAP_KEY}&units=metric'
+    URL_OPEN_WEATHER_MAP = f'{BASE_URL_OPEN_WEATHER}?lat={city["lat"]}&lon={city["lon"]}&appid={OPEN_WEATHERMAP_KEY}{URL_PART}'
     response = requests.get(URL_OPEN_WEATHER_MAP)
+
     if response.status_code != 200:
-        raise Exception("Error getting the temperature")
+        if response.status_code == 429:
+            raise OpenWeatherLimitException()
+        raise OpenWeatherException()
 
     temperature_min = response.json()["daily"][0]["temp"]["min"]
     temperature_max = response.json()["daily"][0]["temp"]["max"]
@@ -53,7 +66,17 @@ def get_temperature(request):
 
     MAX_THREADS = min(os.cpu_count(), len(clean_city))
     with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-        cities_with_temp = list(executor.map(get_temperature_from_city, clean_city))
+        try:
+            cities_with_temp = list(executor.map(get_temperature_from_city, clean_city))
+        except OpenWeatherLimitException:
+            return Response(
+                {"error": "Error getting the temperature in Openwather, limit reached."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        except OpenWeatherException:
+            return Response(
+                {"error": "Error getting the temperature in Openwather."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
 
     return Response({"cities": cities_with_temp}, status=status.HTTP_200_OK)
 
